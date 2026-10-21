@@ -8,9 +8,11 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://github.com/nokia-applied-research/AnyJev/blob/main/LICENSE)
 [![Technical Report](https://img.shields.io/badge/Technical%20Report-PDF-b31b1b?logo=adobeacrobatreader&logoColor=white)](https://arxiv.org/pdf/2610.00831)
 [![Models](https://img.shields.io/badge/%F0%9F%A4%97%20Tacit-models-yellow)](https://huggingface.co/collections/morriszjm/tacit-6ac41d0b50af9e5417c5c234)
+[![Tacitus](https://img.shields.io/badge/%F0%9F%A4%97%20Tacitus-31B-f97316)](https://huggingface.co/morriszjm/AnyJev-Tacitus-31B)
 [![Decision Index](https://img.shields.io/badge/Decision%20Index%200.3-60.22-8b5cf6)](https://huggingface.co/spaces/multimodalart/jev-decision-index)
+[![Decision Index 0.4.1](https://img.shields.io/badge/Decision%20Index%200.4.1-Tacitus%2066.47-6d28d9)](https://huggingface.co/spaces/multimodalart/jev-decision-index)
 
-**English** · [简体中文](https://github.com/nokia-applied-research/AnyJev/blob/main/README.zh-CN.md) · [⚡ Serve it](#-serve-it) · [📊 Results](#-tacit-results) · [🏆 Leaderboard](#-training-free-on-the-decision-index) · [🧭 Roadmap](#-roadmap) · [📖 Levels](https://github.com/nokia-applied-research/AnyJev/blob/main/docs/levels.md)
+**English** · [简体中文](https://github.com/nokia-applied-research/AnyJev/blob/main/README.zh-CN.md) · [⚡ Serve it](#-serve-it) · [📊 Results](#-tacit-results) · [🏆 Leaderboard](#-anyjev-tacitus-on-the-decision-index) · [🧭 Roadmap](#-roadmap) · [📖 Levels](https://github.com/nokia-applied-research/AnyJev/blob/main/docs/levels.md)
 
 </div>
 
@@ -36,6 +38,11 @@
 > the model's own reasoning. They run on transformers, in-process vLLM or a stock `vllm serve`.
 > `pip install "anyjev[hf]"`, then `Tacit.from_pretrained("morriszjm/Tacit-9B")`.
 > [Start here ↓](#-serve-it)
+
+> [!NOTE]
+> **🏆 AnyJev Tacitus on the Decision Index 0.4.1.** [AnyJev Tacitus 31B](https://huggingface.co/morriszjm/AnyJev-Tacitus-31B), fine-tuned from
+> Gemma-4-31B and read with AnyJev, has a Full score of **66.47**, tied 3rd on the board on 2026-10-21.
+> [Details ↓](#-anyjev-tacitus-on-the-decision-index)
 
 > [!NOTE]
 > **🏆 No training, on a public leaderboard.** The training-free `Decider` (L0, two rotations) on the
@@ -186,6 +193,27 @@ reasoning in small print. Served by `vllm serve` (vLLM 0.17.1), run with `script
 On average, escalation adds 567 (JevBench) and 458 (bev-decision) generated tokens per decision for Tacit-9B,
 and 305 and 187 for Tacit-4B. Results with escalation for Tacit-8B, Tacit-2B and Tacit-1.7B come next.
 
+## 🏆 AnyJev Tacitus on the Decision Index
+
+[AnyJev Tacitus 31B](https://huggingface.co/morriszjm/AnyJev-Tacitus-31B) is a decision model fine-tuned from
+[`google/gemma-4-31B-it`](https://huggingface.co/google/gemma-4-31B-it), with an inference technique designed together with
+the training. It reads every decision from one prefill through AnyJev's readout, with no generated tokens. On the
+[Decision Index 0.4.1](https://huggingface.co/spaces/multimodalart/jev-decision-index) board it is tied 3rd by Full score (2026-10-21);
+from edition 0.4 the Full score counts the private parts only.
+
+<div align="center">
+
+| Full score | same skills, private <sub>60%</sub> | new domains, private <sub>40%</sub> | public <sub>not counted</sub> | latency median / mean / p95 |
+|:--:|:--:|:--:|:--:|:--:|
+| **66.47** | 62.48 | 56.93 | 65.52 | 95 / 265 / 1,000 ms |
+
+<sub>The board's maintainers ran the two private parts and measured the latency (single process, one RTX PRO 6000).
+Served by vLLM 0.29.0 with FP8 at load and the model's vLLM plugin, anyjev 0.3.0. Engine, plugin and run settings:
+[MorrisZJ/anyjev-tacitus](https://github.com/MorrisZJ/anyjev-tacitus); results: [decision-index-results](https://huggingface.co/datasets/morriszjm/decision-index-results/tree/d82c491a187b0f015b589ba813084fb695d98b78/runs/anyjev-tacitus-31b-v1) ·
+`bench/results_decision_index/2026-10-21/anyjev-tacitus-31b.json`</sub>
+
+</div>
+
 ## 🏆 Training-free on the Decision Index
 
 The `Decider` at L0 on the unchanged [`google/gemma-4-31B-it`](https://huggingface.co/google/gemma-4-31B-it):
@@ -233,6 +261,7 @@ Every Tacit decision carries its `route`.
 - [x] **Tacit-1.7B, 2B, 4B, 8B and 9B** on Hugging Face; `Tacit` in the library on transformers, vLLM and `vllm serve`, with capped escalation to reasoning and an HTTP gateway
 - [x] The evaluation harness (`scripts/eval_tacit.py`); results with escalation for Tacit-9B and Tacit-4B
 - [x] The training-free path on the public Decision Index 0.3 board ([L0 on Gemma-4-31B](#-training-free-on-the-decision-index))
+- [x] **AnyJev Tacitus 31B** on the Decision Index 0.4.1 board, tied 3rd ([details](#-anyjev-tacitus-on-the-decision-index))
 - [ ] 🚧 Results with escalation for Tacit-8B, Tacit-2B and Tacit-1.7B
 - [ ] 🚧 Label-free early exit: read a decision from part of the model's depth, choosing the depth by agreement with the full model
 - [ ] **Agent-loop evaluation**: the same decisions inside a real agent

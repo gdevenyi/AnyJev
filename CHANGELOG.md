@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **README: AnyJev Tacitus 31B on the Decision Index 0.4.1 board.** A decision model fine-tuned from
+  google/gemma-4-31B-it and read with AnyJev (github.com/MorrisZJ/anyjev-tacitus, weights
+  morriszjm/AnyJev-Tacitus-31B): Full score 66.47, tied 3rd on 2026-10-21, with the private parts and the latency
+  measured by the board's maintainers. A second badge and section; the Decision Index 0.3 badge and section of the
+  training-free path stay as they were. The numbers are in `bench/results_decision_index/2026-10-21/` and checked by
+  `tests/test_readme_numbers.py`.
 - **New: `examples/decision_index/`**, the engine behind the Decision Index board entry (L0 on
   google/gemma-4-31B-it): `anyjev_engine.py`, `serve.sh`, `run.sh` and `requirements.txt`, unchanged from the
   submitted run (github.com/MorrisZJ/anyjev-l0-gemma at 50476e9, which the board links to and which stays as it

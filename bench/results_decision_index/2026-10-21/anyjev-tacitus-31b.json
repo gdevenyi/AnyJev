@@ -1,0 +1,80 @@
+{
+ "what": "AnyJev Tacitus 31B, a decision model fine-tuned from google/gemma-4-31B-it and read with AnyJev, on the Decision Index 0.4.1 board",
+ "model": "morriszjm/AnyJev-Tacitus-31B",
+ "base_model": "google/gemma-4-31B-it",
+ "weights": "bf16 on the Hub (commit 616d514); FP8 by vLLM's dynamic quantization at load (--quantization fp8)",
+ "readout": {
+  "anyjev": "0.3.0",
+  "level": "L0",
+  "rotations": 2,
+  "rotations_over_26_options": 2,
+  "label_prior": "none",
+  "generated_tokens": 0,
+  "serving": "vLLM 0.29.0 with the model's vLLM plugin (anyjev-vllm-bidi)"
+ },
+ "engine_code": "https://github.com/MorrisZJ/anyjev-tacitus/tree/3b21760d8573dac34aed21ca43cfd316c0ed0daf",
+ "public_run": {
+  "kit": "https://github.com/apolinario/decision-index/tree/9eb2dbe2a358004c8782c66e40a83ac07b953fec",
+  "edition": "0.3",
+  "generated_utc": "2026-10-18T20:07:49+00:00",
+  "requests": 140178,
+  "complete": true,
+  "counts": {
+   "ok": 140178
+  },
+  "public_index": 65.52,
+  "raw_index": 73.5,
+  "area_skill": {
+   "knowledge": 0.5275,
+   "language": 0.7032,
+   "retrieval": 0.6755,
+   "tools": 0.8131,
+   "arts": 0.532
+  },
+  "server": "vLLM 0.29.0, torch 2.13.0+cu129, --quantization fp8, --logprobs-mode processed_logprobs, prefix caching on, TRITON_ATTN, max-model-len 114688",
+  "hardware": "NVIDIA H100 NVL (94 GB); the suite was split over two identical tensor-parallel-2 servers",
+  "engine_options": {
+   "model": "morriszjm/AnyJev-Tacitus-31B",
+   "level": "L0",
+   "max_rotations": 2,
+   "big_rotations": 2,
+   "bidi": "block",
+   "prior": "none"
+  },
+  "results": "https://huggingface.co/datasets/morriszjm/decision-index-results/tree/d82c491a187b0f015b589ba813084fb695d98b78/runs/anyjev-tacitus-31b-v1"
+ },
+ "board": {
+  "source": "https://huggingface.co/spaces/multimodalart/jev-decision-index (data/index.json) at 99015c7fe7038e648a7bcb3f5ce3e6705c12c481",
+  "board_label": "Decision Index 0.4.1",
+  "generated_utc": "2026-10-21T17:27:17Z",
+  "name": "AnyJev Tacitus 31B",
+  "pr": "https://github.com/apolinario/decision-index/pull/229",
+  "full_score": 66.47,
+  "public": 65.52,
+  "same_skills_private": 62.48,
+  "new_domains_private": 56.93,
+  "weights": {
+   "public": 0.0,
+   "same_skills": 0.6,
+   "new_domains": 0.4
+  },
+  "rank_by_full_score": 16,
+  "entries": 219,
+  "tie_band": 0.9,
+  "rank_shown_with_ties": 3,
+  "latency_ms": {
+   "median": 95.2,
+   "p95": 999.6,
+   "mean": 264.8,
+   "measured_by": "the board's maintainers, single process on one RTX PRO 6000, private held-out sample"
+  },
+  "maintainer_notes": [
+   "New in the 2026-10-20 PR batch (PR #229).",
+   "Submitted public 0.3 run adopted (kit rescore 65.52, equal to the claim). Private tests run by the lab on one RTX PRO 6000 with the author's serving (FP8 at load); decision agreement with the submitted rows 98.29% on 827 rows (bar 96%).",
+   "A separate model from AnyJev L0 · Gemma-4-31B, which stays on the board.",
+   "Served in FP8 at load as in the submitted run, so the quantized agreement bar applies.",
+   "Run with a 32,768-token context window on one card; the author used 114,688 across four GPUs.",
+   "Per-benchmark times are not shown: the board run sent requests in batches, so its timings are batch wall-clock. The latency shown is the single-request measurement."
+  ]
+ }
+}

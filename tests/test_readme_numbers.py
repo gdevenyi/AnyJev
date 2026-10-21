@@ -10,6 +10,7 @@ READMES = ["README.md", "README.zh-CN.md"]
 TACIT = ROOT / "bench/results_tacit/2026-10-06"
 L0 = ROOT / "bench/results_v01/2026-09-22/Qwen__Qwen3-8B.json"
 DI = ROOT / "bench/results_decision_index/2026-10-12/anyjev-l0-gemma-4-31b.json"
+TACITUS = ROOT / "bench/results_decision_index/2026-10-21/anyjev-tacitus-31b.json"
 
 
 def cells(line):
@@ -60,3 +61,17 @@ def test_decision_index_numbers_match_their_json(readme):
     assert text.count("**%.2f**" % b["full_score"]) == 2, readme                    # the callout and the table
     rank = {"README.md": "5th of %d", "README.zh-CN.md": "%d 个条目中排第 5"}[readme] % b["entries"]
     assert b["rank_by_full_score"] == 5 and text.count(rank) == 2, (readme, rank)
+
+
+@pytest.mark.parametrize("readme", READMES)
+def test_tacitus_numbers_match_their_json(readme):
+    b = json.loads(TACITUS.read_text(encoding="utf-8"))["board"]
+    text = (ROOT / readme).read_text(encoding="utf-8")
+    lat = " / ".join("{:,}".format(round(b["latency_ms"][k])) for k in ("median", "mean", "p95"))
+    row = "| **%.2f** | %.2f | %.2f | %.2f | %s ms |" % (
+        b["full_score"], b["same_skills_private"], b["new_domains_private"], b["public"], lat)
+    assert row in text, (readme, row)
+    assert "Decision%%20Index%%200.4.1-Tacitus%%20%.2f" % b["full_score"] in text, readme   # the badge
+    assert text.count("**%.2f**" % b["full_score"]) == 2, readme                          # the callout and the table
+    rank = {"README.md": "tied %drd", "README.zh-CN.md": "并列第 %d"}[readme] % b["rank_shown_with_ties"]
+    assert b["rank_shown_with_ties"] == 3 and text.count(rank) == 3, (readme, rank)      # callout, section, roadmap
