@@ -9,7 +9,8 @@ reference is the server's other path: the prompt sent as text (Strata tokenizes 
 engine's vocabulary and the named-id readout against the top-K one; labels outside the top 20 are
 not compared. Then a Decider at L0 runs over the same questions and prints its decisions.
 Checked on Strata 0.1.49.2 with Qwen3.8-Flash-Next IQ3_S on an RTX 5080: 50 of 50 labels in the
-top 20, max_abs_diff 0.62. Strata does not repeat a read bit for bit on prompts of this length, so
+top 20, max_abs_diff 0.62 with the launch defaults and 0.72 with `--prompt-cache 0 --adapt-swaps 0
+--pcie-frac 0`. Strata does not repeat a read bit for bit on prompts of this length, so
 this is the run-to-run spread, not a readout error: one prompt read ten times spread up to 0.53.
 """
 from __future__ import annotations

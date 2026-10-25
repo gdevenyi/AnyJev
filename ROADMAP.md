@@ -46,6 +46,9 @@ The version in brackets is the one an item first shipped in.
 - [x] **SGLang backend** (unreleased). `SGLangBackend` reads the label log-probabilities from SGLang's
   native `/generate` endpoint without sampling; parity against `HFBackend` in `scripts/sglang_parity.py`,
   checked on SGLang 0.5.10. Contributed by @shentonyan (#12).
+- [x] **Strata backend** (unreleased). `StrataBackend` reads the label log-probabilities from Strata's
+  `/v1/completions` with `allowed_token_ids`, without sampling; checked against the same server's top-20 in
+  `scripts/strata_parity.py` on Strata 0.1.49.2 (needs Niko1221/Strata#3200 and #3332 joined).
 - [x] **Releases on PyPI** (0.1.0, 0.2.0). Each was installed from the index into a fresh venv, with
   `__version__` matching `pyproject.toml`.
 
