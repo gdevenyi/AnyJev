@@ -12,8 +12,8 @@ renormalized over the labels, so ``answer_mass`` keeps its meaning.
     Decider(StrataBackend("http://localhost:8080", "qwen3.8-flash-next-iq3_s",
                           tokenizer_name="Qwen/Qwen3.8-Flash-Next", api_key="..."))
 
-Needs a Strata server with logprobs on ``/v1/completions`` (Niko1221/Strata#3200, #3332 and the
-follow-up that joins them) and without ``--parallel``: Strata writes no log-probabilities from its
+Needs a Strata server with logprobs on ``/v1/completions`` (Niko1221/Strata#3200, #3332 and #4056,
+which joins them) and without ``--parallel``: Strata writes no log-probabilities from its
 batch slots and refuses such a request. ``tokenizer_name`` must be the model's own Hugging Face
 tokenizer: Strata's pack tokenizer is in its own format, and the ids have to match the engine's.
 Checked on Strata 0.1.49.2 (Qwen3.8-Flash-Next IQ3_S, RTX 5080) with ``scripts/strata_parity.py``:

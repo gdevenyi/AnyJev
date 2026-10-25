@@ -21,7 +21,7 @@
 - **New: `StrataBackend`** (`anyjev/backends/strata.py`), for Strata's `/v1/completions`. Each prompt goes
   as token ids with `max_tokens=1`, `logprobs=0` and `allowed_token_ids` set to the labels, and the named ids'
   full-vocabulary log-probabilities are read back by id (`return_tokens_as_token_ids`). It needs a Strata
-  server with logprobs on `/v1/completions` (Niko1221/Strata#3200, #3332 and the PR that joins them), run
+  server with logprobs on `/v1/completions` (Niko1221/Strata#3200, #3332 and #4056, which joins them), run
   without `--parallel`. HFBackend cannot load the 125B models Strata serves, so `scripts/strata_parity.py`
   checks against the same server's unrestricted top-20 instead. The contract tests run against a stub in CI;
   the engine smoke test is marked `@pytest.mark.engine`.
