@@ -18,6 +18,13 @@
   5th of 149 entries on 2026-10-12, with the private parts and the latency measured by the board's maintainers.
   The numbers are in `bench/results_decision_index/2026-10-12/` and checked by `tests/test_readme_numbers.py`;
   the engine is github.com/MorrisZJ/anyjev-l0-gemma.
+- **New: `StrataBackend`** (`anyjev/backends/strata.py`), for Strata's `/v1/completions`. Each prompt goes
+  as token ids with `max_tokens=1`, `logprobs=0` and `allowed_token_ids` set to the labels, and the named ids'
+  full-vocabulary log-probabilities are read back by id (`return_tokens_as_token_ids`). It needs a Strata
+  server with logprobs on `/v1/completions` (Niko1221/Strata#3200, #3332 and the PR that joins them), run
+  without `--parallel`. HFBackend cannot load the 125B models Strata serves, so `scripts/strata_parity.py`
+  checks against the same server's unrestricted top-20 instead. The contract tests run against a stub in CI;
+  the engine smoke test is marked `@pytest.mark.engine`.
 - **New: `SGLangBackend`** (`anyjev/backends/sglang.py`), the native `/generate` scoring path. It sends the
   prompt's token ids alone with `max_new_tokens=0`, `return_logprob=True` and `token_ids_logprob`, and reads
   the requested ids from `meta_info["output_token_ids_logprobs"][0]` by id, so no token is sampled. Checked
