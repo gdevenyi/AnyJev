@@ -12,15 +12,20 @@ renormalized over the labels, so ``answer_mass`` keeps its meaning.
     Decider(StrataBackend("http://localhost:8080", "qwen3.8-flash-next-iq3_s",
                           tokenizer_name="Qwen/Qwen3.8-Flash-Next", api_key="..."))
 
-Needs a Strata server with logprobs on ``/v1/completions`` (Niko1221/Strata#3200, #3332 and #4056,
-which joins them) and without ``--parallel``: Strata writes no log-probabilities from its
-batch slots and refuses such a request. ``tokenizer_name`` must be the model's own Hugging Face
-tokenizer: Strata's pack tokenizer is in its own format, and the ids have to match the engine's.
-Checked on Strata 0.1.49.2 (Qwen3.8-Flash-Next IQ3_S, RTX 5080) with ``scripts/strata_parity.py``:
-the Hugging Face tokenizer's ids match the engine's, and the named-id values match the server's
-top-K for the same read. Strata is not bit-for-bit repeatable on longer prompts (its prompt
-cache, expert placement and kernel choice change the rounding; ``docs/DETAILS.md`` there), so
-two reads of one 101-token prompt differed by up to 0.53 in a low label's log-probability.
+Needs Strata 0.2.7 or later (logprobs, from Niko1221/Strata#3200) with ``/v1/completions`` and its
+logprobs (#3332 and #4056). ``--parallel`` works: a ``max_tokens=1`` read is answered from batch
+slots too, and this backend never asks for more. ``tokenizer_name`` must be the model's own
+Hugging Face tokenizer: Strata's pack tokenizer is in its own format, and the ids have to match
+the engine's.
+
+Repeatable reads: by default Strata moves experts between RAM and VRAM as it runs and splits a
+short prompt's experts between CPU and GPU by measured speed, so the same prompt can come back a
+few hundredths of a nat different (Niko1221/Strata#4059). Starting the engine with
+``--adapt-swaps 0`` and ``STRATA_PREFILL_CPU_SHARE=0.5`` made every read identical.
+
+Checked on Strata 0.1.53 (Qwen3.8-Flash-Next IQ3_S, RTX 5080) with ``scripts/strata_parity.py``:
+the Hugging Face tokenizer's ids match the engine's, and with those two settings the named-id
+values equal the server's top-K exactly (max_abs_diff 0.000000, twice).
 This backend does not expose L2 hidden states.
 """
 from __future__ import annotations
