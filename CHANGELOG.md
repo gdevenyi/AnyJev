@@ -18,6 +18,12 @@
   5th of 149 entries on 2026-10-12, with the private parts and the latency measured by the board's maintainers.
   The numbers are in `bench/results_decision_index/2026-10-12/` and checked by `tests/test_readme_numbers.py`;
   the engine is github.com/MorrisZJ/anyjev-l0-gemma.
+- **New: `python -m anyjev.serve --backend strata`**, the HTTP gateway's training-free mode: the same
+  `POST /v1/decide` (one decision or `{"items": [...]}`), `GET /v1/stats` and `GET /health` as the Tacit gateway,
+  answered by a `Decider` (L0) over `StrataBackend`, one decision at a time. Its default prior is `content_free`, so
+  the same request gets the same answer however much traffic came before it; with Strata's canonical reads
+  (Niko1221/Strata#4604) the probabilities repeat exactly. One gateway reads from one Strata server. Tests:
+  `tests/test_serve_decider.py` (fake backend).
 - **New: `StrataBackend`** (`anyjev/backends/strata.py`), for Strata's `/v1/completions`. Each prompt goes
   as token ids with `max_tokens=1`, `logprobs=0` and `allowed_token_ids` set to the labels, and the named ids'
   full-vocabulary log-probabilities are read back by id (`return_tokens_as_token_ids`). It needs a Strata
