@@ -18,14 +18,16 @@ slots too, and this backend never asks for more. ``tokenizer_name`` must be the 
 Hugging Face tokenizer: Strata's pack tokenizer is in its own format, and the ids have to match
 the engine's.
 
-Repeatable reads: by default Strata moves experts between RAM and VRAM as it runs and splits a
-short prompt's experts between CPU and GPU by measured speed, so the same prompt can come back a
-few hundredths of a nat different (Niko1221/Strata#4059). Starting the engine with
-``--adapt-swaps 0`` and ``STRATA_PREFILL_CPU_SHARE=0.5`` made every read identical.
+Repeatable reads: by default Strata moves experts between RAM and VRAM as it runs, reads some
+missed experts over PCIe, and splits a short prompt's experts between CPU and GPU by measured
+speed, so the same prompt can come back a few hundredths of a nat different, most of all in the
+first requests after a start (Niko1221/Strata#4059). Starting the engine with ``--adapt-swaps 0
+--pcie-frac 0`` and ``STRATA_PREFILL_CPU_SHARE=0.5`` made every read identical, from the first.
+One-token reads cost the same; text generation runs about 38% slower that way (RTX 5080).
 
 Checked on Strata 0.1.53 (Qwen3.8-Flash-Next IQ3_S, RTX 5080) with ``scripts/strata_parity.py``:
-the Hugging Face tokenizer's ids match the engine's, and with those two settings the named-id
-values equal the server's top-K exactly (max_abs_diff 0.000000, twice).
+the Hugging Face tokenizer's ids match the engine's, and with those three settings the named-id
+values equal the server's top-K exactly, and the Decider's results repeat, from the first run.
 This backend does not expose L2 hidden states.
 """
 from __future__ import annotations
