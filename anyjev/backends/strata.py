@@ -18,16 +18,21 @@ slots too, and this backend never asks for more. ``tokenizer_name`` must be the 
 Hugging Face tokenizer: Strata's pack tokenizer is in its own format, and the ids have to match
 the engine's.
 
-Repeatable reads: by default Strata moves experts between RAM and VRAM as it runs, reads some
-missed experts over PCIe, and splits a short prompt's experts between CPU and GPU by measured
-speed, so the same prompt can come back a few hundredths of a nat different, most of all in the
-first requests after a start (Niko1221/Strata#4059). Starting the engine with ``--adapt-swaps 0
---pcie-frac 0`` and ``STRATA_PREFILL_CPU_SHARE=0.5`` made every read identical, from the first.
-One-token reads cost the same; text generation runs about 38% slower that way (RTX 5080).
+Repeatable reads: Strata computes an expert on the GPU's hit path, over PCIe or on the CPU
+depending on what its expert cache holds, and the paths round differently, so by default the same
+prompt can come back a few hundredths of a nat different (Niko1221/Strata#4059). A Strata with
+canonical reads (Niko1221/Strata#4604) reads every request this backend sends - one token's
+logprobs - the same way whatever the cache holds: the same prompt gives the same log-probabilities,
+with other traffic in between and after a restart, and the server's other requests keep their
+speed. No server setting is needed. A canonical read reuses no cached prefix, so it costs what a
+first read of its prompt does. On a Strata without it, ``--adapt-swaps 0 --pcie-frac 0`` with
+``STRATA_PREFILL_CPU_SHARE=0.5`` also makes the reads identical, at about 38% of the whole
+server's decode speed (RTX 5080).
 
-Checked on Strata 0.1.53 (Qwen3.8-Flash-Next IQ3_S, RTX 5080) with ``scripts/strata_parity.py``:
-the Hugging Face tokenizer's ids match the engine's, and with those three settings the named-id
-values equal the server's top-K exactly, and the Decider's results repeat, from the first run.
+Checked on Strata 0.1.53 with #4604 (Qwen3.8-Flash-Next IQ3_S, launch defaults, an RTX 5080 and a
+GTX 1080 Ti) with ``scripts/strata_parity.py``: the Hugging Face tokenizer's ids match the
+engine's, the named-id values equal the server's top-K exactly, and the Decider's results repeat
+across runs, cache churn and a restart.
 This backend does not expose L2 hidden states.
 """
 from __future__ import annotations

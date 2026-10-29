@@ -8,12 +8,11 @@ reference is the server's other path: the prompt sent as text (Strata tokenizes 
 ``logprobs=20`` and no ``allowed_token_ids``. That checks the Hugging Face tokenizer against the
 engine's vocabulary and the named-id readout against the top-K one; labels outside the top 20 are
 not compared. Then a Decider at L0 runs over the same questions and prints its decisions.
-Checked on Strata 0.1.53 with Qwen3.8-Flash-Next IQ3_S on an RTX 5080: 50 of 50 labels in the
-top 20. With `--adapt-swaps 0 --pcie-frac 0` and `STRATA_PREFILL_CPU_SHARE=0.5` the two paths agree
-exactly and the Decider's results repeat from the first run after a start (without `--pcie-frac 0`
-the first run differs from later ones). With the launch defaults Strata's reads drift between
-requests (Niko1221/Strata#4059), and the difference measured 0.62 to 1.14: run-to-run spread, not a
-readout error.
+Checked on Strata 0.1.53 with canonical reads (Niko1221/Strata#4604), Qwen3.8-Flash-Next IQ3_S,
+launch defaults, on an RTX 5080 and a GTX 1080 Ti: 50 of 50 labels in the top 20, and the two paths
+agree exactly (max_abs_diff 0.000000) - both reads are one token's logprobs, so both are canonical.
+On a Strata without it, reads drift between requests (Niko1221/Strata#4059) and the difference
+measured 0.62 to 1.14: run-to-run spread, not a readout error.
 """
 from __future__ import annotations
 

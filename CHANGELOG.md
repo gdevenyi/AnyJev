@@ -22,9 +22,11 @@
   as token ids with `max_tokens=1`, `logprobs=0` and `allowed_token_ids` set to the labels, and the named ids'
   full-vocabulary log-probabilities are read back by id (`return_tokens_as_token_ids`). It needs a Strata
   server of 0.2.7 or later with logprobs on `/v1/completions` (Niko1221/Strata#3332 and #4056); `--parallel` works,
-  since every read is `max_tokens=1`. For identical repeated reads, start Strata with `--adapt-swaps 0
-  --pcie-frac 0` and `STRATA_PREFILL_CPU_SHARE=0.5` (Niko1221/Strata#4059): free for these one-token reads,
-  about 38% slower for text generation. HFBackend cannot load the 125B models Strata serves, so `scripts/strata_parity.py`
+  since every read is `max_tokens=1`. Its reads are repeatable on a Strata with canonical reads
+  (Niko1221/Strata#4604): every one-token logprobs read is computed the same way whatever the expert cache
+  holds, with no server setting and no cost to the server's other requests (a read costs what a first read of
+  its prompt does). Without it, `--adapt-swaps 0 --pcie-frac 0` and `STRATA_PREFILL_CPU_SHARE=0.5` do the
+  same for about 38% of the server's decode speed (Niko1221/Strata#4059). HFBackend cannot load the 125B models Strata serves, so `scripts/strata_parity.py`
   checks against the same server's unrestricted top-20 instead. The contract tests run against a stub in CI;
   the engine smoke test is marked `@pytest.mark.engine`.
 - **New: `SGLangBackend`** (`anyjev/backends/sglang.py`), the native `/generate` scoring path. It sends the
